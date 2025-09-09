@@ -12,10 +12,10 @@ npm i
 
 Create an .env in the "next-js-examples" folder then add these items:
 
-'''bash
+```bash
 OPENAI_API_KEY=paste your openai api key
-LLM_HOST=https://api.openai.com
-'''
+LLM_HOST=https://api.ai.it.cornell.edu
+```
 
 You can also refer to .env.template for syntax.
 

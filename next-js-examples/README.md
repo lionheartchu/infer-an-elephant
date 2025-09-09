@@ -10,15 +10,14 @@ npm i
 
 ## Set up environment variables
 
-Copy .env.template file and rename to .env after which add corresponding items here. Your .env file should look like:
+Create an .env in the "next-js-examples" folder then add these items:
 
 '''bash
-OPENAI_API_KEY=past your openai api key
+OPENAI_API_KEY=paste your openai api key
 LLM_HOST=https://api.openai.com
-CORNELL_API_KEY=not needed at the moment
-CORNELL_LLM_HOST=https://api.ai.it.cornell.edu
-ELEVENLABS_API_KEY=optional
 '''
+
+You can also refer to .env.template for syntax.
 
 ## Run locally
 

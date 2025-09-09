@@ -31,7 +31,13 @@ brew install nvm
 
 If you have any trouble with Homebrew setup please check: https://mac.install.guide/homebrew/
 
-Once NVM is installed, add the following lines to your shell profile (e.g., ~/.bashrc, ~/.zshrc, or ~/.bash_profile).
+Once NVM is installed, we need to create a .nvm folder on your computer:
+
+```bash
+mkdir .nvm
+```
+
+Then, add the following lines to your shell profile (e.g., ~/.bashrc, ~/.zshrc, or ~/.bash_profile).
 
 You can check these files by using below command:
 
@@ -48,9 +54,9 @@ vim ~/.zshrc
 In the file add the below lines. If you never used vim, 'i' is the command for entering typing mode, in order to save + quit, use 'esc' to exit typing mode and use ':wq' command and hit enter.
 
 ```bash
-export NVM_DIR=~/.nvm
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 ```
 
 ### Windows instruction

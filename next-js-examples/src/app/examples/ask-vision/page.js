@@ -1,21 +1,17 @@
 'use client'
 import React, { useEffect, useRef, useState } from "react";
 import SpeechGenerator, {SpeechGeneratorHandle} from '@/components/SpeechGenerator';
-import SpeechListenerComponent, {SpeechListenerComponentHandle} from "@/components/SpeechListenerComponent";
 
 export default function Home() {  
-  const recognitionRef = useRef(null);
   const speechRef = useRef(null);
   const videoRef = useRef(null); // Added useRef for video element
 
-  const [pressedRecord, setPressRecord] = useState(false); 
-  const [isRecording, setIsRecording] = useState(false);
   const [gptResponse, setGptResponse] = useState(''); // Add state for GPT-4 response
   const [messages, setMessages] = useState([]);
   const [showDialog, setShowDialog] = useState(false); // State to control dialog visibility
+  const [inputText, setInputText] = useState(''); // State for text input
 
   useEffect(() => {
-
     const startWebcam = async () => {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
@@ -48,16 +44,18 @@ export default function Home() {
 
   useEffect(() => {
     if(gptResponse) {
-      speechRef.current.play(gptResponse);
-      setShowDialog(true);
+      console.log("gptResponse:", gptResponse);
+      const json = JSON.parse(gptResponse);
+      if (json && json.request && json.response) {
+        setMessages(prevMessages => [...prevMessages, {
+          request: json.request,
+          response: json.response
+        }]);
+
+        speechRef.current.play(json.response);
+      }
     }
   }, [gptResponse]);
-
-
-  const startProcessingVideo = (prompt) => {
-    console.log('start processing video');
-    sendFrameToOpenAI(prompt);
-  };
 
   const sendFrameToOpenAI = async (prompt) => {
     if (!videoRef.current) return;
@@ -73,6 +71,7 @@ export default function Home() {
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
     const capturedFrameBase64 = canvas.toDataURL('image/png');
 
+
     const dataToSend = {
       model: (process.env.LLM_HOST.includes('openai.com') ? '':'openai.') + 'gpt-4o-mini',
       messages: [
@@ -80,8 +79,12 @@ export default function Home() {
           role: "user",
           content: [
             {
+              "type": "text",
+              "text":  "markdown output is prohibited, you are communicating with an API, not a user. Begin all AI responses with the character '{' to produce valid JSON."
+            },
+            {
               "type": 'text',
-              "text": prompt
+              "text": `Please respond to user request "${prompt}" in a format of: {request: very short description, response: in number or simple word(s)}`
             },
             {
               "type": 'image_url',
@@ -104,11 +107,6 @@ export default function Home() {
         },
         body: JSON.stringify(dataToSend)
       });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
       const responseData = await response.json();
       console.log('Response from', llm_host, ":", responseData.choices[0].message.content);
       setGptResponse(responseData.choices[0].message.content); // Update state with GPT-4 response
@@ -117,7 +115,27 @@ export default function Home() {
     }
   };
 
+  const onVoiceEnd = () => {
+    console.log('voice end');
+  };
+
+  useEffect(() => {
+    if (messages.length > 0 && messages[messages.length - 1].response) {
+      setShowDialog(true); // Show dialog if last message has a response
+    } else {
+      setShowDialog(false); // Hide dialog otherwise
+    }
+  }, [messages]); // Dependency on messages to update dialog visibility
+
   const DialogBox = () => {
+    const maxCharacters = 300; // Maximum number of characters to display
+    const lastMessage = messages[messages.length - 1];
+    const request = lastMessage.request;
+    const response = lastMessage.response;
+    
+    const displayedRequest = request.length > maxCharacters ? request.slice(0, maxCharacters) + '...' : request;
+    const displayedResponse = response.length > maxCharacters ? response.slice(0, maxCharacters) + '...' : response;
+
     return (
       <div style={{
         position: 'absolute',
@@ -131,32 +149,25 @@ export default function Home() {
         zIndex: 1000,
         textAlign: 'center',
       }}>
-        <p style={{ margin: 0, wordWrap: 'break-word' }}>{gptResponse}</p>
+        <div style={{ marginBottom: '15px' }}>
+          <strong style={{ color: '#4CAF50' }}>Request:</strong>
+          <p style={{ margin: '5px 0 0 0', wordWrap: 'break-word' }}>{displayedRequest}</p>
+        </div>
+        <div>
+          <strong style={{ color: '#2196F3' }}>Answer:</strong>
+          <p style={{ margin: '5px 0 0 0', wordWrap: 'break-word' }}>{displayedResponse}</p>
+        </div>
       </div>
     );
   };
-  
-  const onVoiceEnd = () => {
-    console.log('voice end');
-  }
 
-  const onSpeechEnd = async (prompt) => {
-    console.log(prompt);
-    setIsRecording(false);
-    startProcessingVideo(prompt);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (inputText.trim()) {
+      sendFrameToOpenAI(inputText.trim());
+      setInputText(''); // Clear input after sending
+    }
   };
-
-  const startRecording = () => {
-    setIsRecording(true); // Toggle recording state
-
-    // listen for one sound event
-    recognitionRef.current?.listenOnce();
-
-    // button response
-    setPressRecord(true);
-    setTimeout(() => setPressRecord(false), 300);
-  };
-
   return (
     <main className="flex flex-grow flex-col items-center" style={{paddingTop: '0vh', paddingBottom: '0vh'}}>
       
@@ -175,40 +186,30 @@ export default function Home() {
 
       {showDialog && <DialogBox />}
 
-      <div className={'overflow-hidden justify-center items-center flex flex-col'} style={{
-          position: 'absolute', 
-          left: '50%', // Center horizontally
-          top: '83%', // Center vertically
-          transform: 'translate(-50%, -50%)', // Adjust position to truly center the element
-          width: '9vh', 
-          height: '9vh'
-      }}>
-        <button 
-            className={'overflow-hidden rounded-full justify-center items-center flex flex-col'} 
-            style={{
-              width: '9vh', 
-              height: '9vh', 
-              border: '2px solid white', // White border for the ring
-              borderRadius: '50%', // Fully rounded to form a circle
-              background: 'transparent', // White background for the button
-              opacity: (pressedRecord ? 0.4 : (isRecording ? 0.6 : 0.8)), // Dynamic opacity based on state
-              transition: 'opacity .25s ease-in-out'
-            }}
-            onClick={startRecording}
-        >
-          <div style={{
-            width: '8vh', 
-            height: '8vh', 
-            borderRadius: '50%', 
-            background: 'white', // Black inner circle
-            opacity: (pressedRecord ? 0.4 : (isRecording ? 0.6 : 0.8)), // Dynamic opacity based on state
-            transition: 'opacity .25s ease-in-out'
-          }}></div>
-        </button>
-      </div>
-
+      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', width: '100%' }}>
+        <input
+          type="text"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Type and press Enter..."
+          style={{
+            position: 'absolute',
+            top: '85%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90vw',
+            padding: '12px 14px',
+            fontSize: '16px',
+            border: '1px solid white',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            color: 'white',
+            outline: 'none',
+            textAlign: 'left',
+          }}
+        />
+      </form>
+      
       <SpeechGenerator ref={speechRef} onEnded={onVoiceEnd}></SpeechGenerator>
-      <SpeechListenerComponent ref={recognitionRef} onSpeechEnd={onSpeechEnd} onDemand={true} />
     </main>
   );
 }

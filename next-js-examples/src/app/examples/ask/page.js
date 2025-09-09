@@ -39,7 +39,7 @@ export default function Home() {
             },
             {
               "type": 'text',
-              "text": `Please respond to user request "${prompt}" in a format of: {request: very short description, response: short response in a sentence or two}`
+              "text": `Please respond to user request "${prompt}" in a format of: {request: very short description, response: in number or simple word(s)}`
             },
           ]
         }
@@ -78,8 +78,12 @@ export default function Home() {
 
   const DialogBox = () => {
     const maxCharacters = 300; // Maximum number of characters to display
-    const lastMessage = messages[messages.length - 1].response;
-    const displayedMessage = lastMessage.length > maxCharacters ? lastMessage.slice(0, maxCharacters) + '...' : lastMessage;
+    const lastMessage = messages[messages.length - 1];
+    const request = lastMessage.request;
+    const response = lastMessage.response;
+    
+    const displayedRequest = request.length > maxCharacters ? request.slice(0, maxCharacters) + '...' : request;
+    const displayedResponse = response.length > maxCharacters ? response.slice(0, maxCharacters) + '...' : response;
 
     return (
       <div style={{
@@ -94,7 +98,14 @@ export default function Home() {
         zIndex: 1000,
         textAlign: 'center',
       }}>
-        <p>{displayedMessage}</p>
+        <div style={{ marginBottom: '15px' }}>
+          <strong style={{ color: '#4CAF50' }}>Request:</strong>
+          <p style={{ margin: '5px 0 0 0', wordWrap: 'break-word' }}>{displayedRequest}</p>
+        </div>
+        <div>
+          <strong style={{ color: '#2196F3' }}>Answer:</strong>
+          <p style={{ margin: '5px 0 0 0', wordWrap: 'break-word' }}>{displayedResponse}</p>
+        </div>
       </div>
     );
   };

@@ -10,7 +10,7 @@ export default function Home() {
   const [showDialog, setShowDialog] = useState(false); // State to control dialog visibility
   const [inputText, setInputText] = useState(''); // State for text input
 
-    useEffect(() => {
+  useEffect(() => {
     if(gptResponse) {
       // add assistant message to log
       log.addMessage({

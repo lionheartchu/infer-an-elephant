@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from "react";
-import SpeechGenerator, {SpeechGeneratorHandle} from '@/components/SpeechGenerator';
+import SerialConnection from "@/components/SerialConnection";
 
 export default function Home() {  
   const speechRef = useRef(null);
@@ -8,10 +8,11 @@ export default function Home() {
   const [gptResponse, setGptResponse] = useState(''); // Add state for GPT-4 response
   const [showDialog, setShowDialog] = useState(false); // State to control dialog visibility
   const [inputText, setInputText] = useState(''); // State for text input
+  const [isSerialConnected, setIsSerialConnected] = useState(false); // Track serial connection
+  const serialRef = useRef(null); // Reference to serial component
   
   useEffect(() => {
     if(gptResponse) {
-      speechRef.current.play(gptResponse);
       setShowDialog(true); // Show dialog when we have a response
     }
   }, [gptResponse]);
@@ -51,10 +52,6 @@ export default function Home() {
     }
   };
 
-  const onVoiceEnd = () => {
-    console.log('voice end');
-  };
-
   const DialogBox = () => {
     return (
       <div style={{
@@ -74,10 +71,33 @@ export default function Home() {
     );
   };
 
+  // Handle serial data received from Arduino
+  const handleSerialData = (newData, fullData) => {
+    // Process Arduino data with AI if it contains meaningful content
+    if (newData.trim().length > 0) {
+      console.log('Arduino:', newData);
+      // Uncomment to enable AI processing of Arduino data
+      // sendToOpenAI(`Arduino sent: ${newData}`);
+    }
+  };
+
+  // Handle serial connection changes
+  const handleSerialConnection = (connected) => {
+    setIsSerialConnected(connected);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (inputText.trim()) {
-      sendToOpenAI(inputText.trim());
+    if (inputText.trim()) {      
+      // Also send to Arduino if connected
+      if (isSerialConnected && serialRef.current) {
+        serialRef.current.sendToArduino(inputText.trim());
+      }
+      else {
+        // Send to AI
+        sendToOpenAI(inputText.trim());
+      }
+      
       setInputText(''); // Clear input after sending
     }
   };
@@ -86,12 +106,29 @@ export default function Home() {
 
       {showDialog && <DialogBox />}
 
+      {/* Serial Connection Component */}
+      <div style={{
+        position: 'absolute',
+        top: '10%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '90vw',
+        zIndex: 100
+      }}>
+        <SerialConnection
+          ref={serialRef}
+          onDataReceived={handleSerialData}
+          onConnectionChange={handleSerialConnection}
+          baudRate={115200}
+        />
+      </div>
+
       <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', width: '100%' }}>
         <input
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder="Type and press Enter..."
+          placeholder={isSerialConnected ? "Type message for AI and Arduino..." : "Type message for AI..."}
           style={{
             position: 'absolute',
             top: '85%',
@@ -108,8 +145,6 @@ export default function Home() {
           }}
         />
       </form>
-      
-      <SpeechGenerator ref={speechRef} onEnded={onVoiceEnd}></SpeechGenerator>
     </main>
   );
 }

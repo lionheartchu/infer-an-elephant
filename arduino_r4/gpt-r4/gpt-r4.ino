@@ -10,7 +10,7 @@ String openaiKey = "";  // Set your OpenAI API Key here
 
 // ChatGPT
 String role = "You are a helpful assistant.";
-String model = "gpt-4o-mini";
+String model = "openai.gpt-4o-mini";
 String system_content = "{\"role\": \"system\", \"content\":\""+ role +"\"}";
 String historical_messages = system_content;
 

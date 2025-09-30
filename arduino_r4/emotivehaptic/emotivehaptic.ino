@@ -12,7 +12,7 @@ const int HAPTIC_PIN = 10;  // Change this to your actual haptic motor pin
 
 // ChatGPT with emotion instruction
 String role = "You are a helpful assistant. Always end your response with your emotional state as a number from 0-100 in this exact format: [EMOTION:XX] where XX is the number. 0 means very unhappy/sad, 50 is neutral, 100 means very happy/excited.";
-String model = "openai.gpt-4o-mini";  // Fixed model name
+String model = "openai.gpt-4o-mini";
 String system_content = "{\"role\": \"system\", \"content\":\""+ role +"\"}";
 String historical_messages = system_content;
 
@@ -26,11 +26,13 @@ void setup()
   }
   delay(1000);
   
-  // Initialize haptic motor pin
+  // initialize WiFi
+  initWiFi();
+
+  // initialize haptic motor pin
   pinMode(HAPTIC_PIN, OUTPUT);
   analogWrite(HAPTIC_PIN, 0); // Start with motor off
   
-  initWiFi();
   Serial.println("Type to ask openai. The AI will respond with haptic feedback based on its emotional state!");
 }
 
@@ -60,6 +62,103 @@ void loop()
   }  
 }
 
+// Extract emotion value from AI response
+int extractEmotion(String response) {
+  int emotionIndex = response.indexOf("[EMOTION:");
+  if (emotionIndex >= 0) {
+    int startNum = emotionIndex + 9; // Length of "[EMOTION:"
+    int endBracket = response.indexOf("]", startNum);
+    if (endBracket > startNum) {
+      String emotionStr = response.substring(startNum, endBracket);
+      emotionStr.trim();
+      int emotion = emotionStr.toInt();
+      
+      // Validate emotion range
+      if (emotion < 0) emotion = 0;
+      if (emotion > 100) emotion = 100;
+      
+      return emotion;
+    }
+  }
+  
+  // Default to neutral if no emotion tag found
+  return 50;
+}
+
+// Remove emotion tag from response for clean display
+String removeEmotionTag(String response) {
+  int emotionIndex = response.indexOf("[EMOTION:");
+  if (emotionIndex >= 0) {
+    int endBracket = response.indexOf("]", emotionIndex);
+    if (endBracket >= 0) {
+      String cleanResponse = response.substring(0, emotionIndex) + 
+                           response.substring(endBracket + 1);
+      cleanResponse.trim();
+      return cleanResponse;
+    }
+  }
+  return response;
+}
+
+// Apply haptic feedback based on emotion level
+void applyHapticFeedback(int emotionLevel) {
+  int intensity = map(emotionLevel, 0, 100, 160, 255); // Minimum 50 for noticeable vibration
+  
+  // Map emotion to vibration pattern
+  if (emotionLevel <= 20) {
+    for (int i = 0; i < 4; i++) {
+      analogWrite(HAPTIC_PIN, intensity);
+      delay(400);
+      analogWrite(HAPTIC_PIN, 0);
+      delay(1500);
+    }
+  }
+  else if (emotionLevel <= 40) {
+    analogWrite(HAPTIC_PIN, intensity);
+    delay(600);
+    analogWrite(HAPTIC_PIN, 0);
+    delay(1000);
+    analogWrite(HAPTIC_PIN, intensity);
+    delay(600);
+    analogWrite(HAPTIC_PIN, 0);
+    delay(1000);
+  }
+  else if (emotionLevel <= 60) {
+    analogWrite(HAPTIC_PIN, intensity);
+    delay(400);
+    analogWrite(HAPTIC_PIN, 0);
+    delay(200);
+    analogWrite(HAPTIC_PIN, intensity);
+    delay(400);
+    analogWrite(HAPTIC_PIN, 0);
+    delay(200);
+  }
+  else if (emotionLevel <= 80) {
+    for (int i = 0; i < 10; i++) {
+      analogWrite(HAPTIC_PIN, intensity);
+      delay(150);
+      analogWrite(HAPTIC_PIN, 0);
+      delay(100);
+    }
+  }
+  else {
+    for (int i = 0; i < 8; i++) {
+      analogWrite(HAPTIC_PIN, intensity);
+      delay(100);
+      analogWrite(HAPTIC_PIN, 0);
+      delay(60);
+    }
+  }
+  
+  // Ensure motor is off after pattern
+  analogWrite(HAPTIC_PIN, 0);
+}
+
+
+// *************************************************************
+// Don't worry about the code below this line
+// *************************************************************
+
 void initWiFi() {
   Serial.print("Connecting to ");
   Serial.println(wifi_ssid);
@@ -82,15 +181,10 @@ void initWiFi() {
 
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("WiFi connected");
-    printWifiStatus();
     delay(200);
   } else {
     Serial.println("Failed to connect to WiFi");
   }
-}
-
-void printWifiStatus() {
-  // WiFi status info commented out as in original
 }
 
 String openAI_chat(String message) { 
@@ -190,98 +284,6 @@ String openAI_chat(String message) {
     Serial.println("Failed to connect!");
     return "OpenAI Connection failed";
   }
-}
-
-// Extract emotion value from AI response
-int extractEmotion(String response) {
-  int emotionIndex = response.indexOf("[EMOTION:");
-  if (emotionIndex >= 0) {
-    int startNum = emotionIndex + 9; // Length of "[EMOTION:"
-    int endBracket = response.indexOf("]", startNum);
-    if (endBracket > startNum) {
-      String emotionStr = response.substring(startNum, endBracket);
-      emotionStr.trim();
-      int emotion = emotionStr.toInt();
-      
-      // Validate emotion range
-      if (emotion < 0) emotion = 0;
-      if (emotion > 100) emotion = 100;
-      
-      return emotion;
-    }
-  }
-  
-  // Default to neutral if no emotion tag found
-  return 50;
-}
-
-// Remove emotion tag from response for clean display
-String removeEmotionTag(String response) {
-  int emotionIndex = response.indexOf("[EMOTION:");
-  if (emotionIndex >= 0) {
-    int endBracket = response.indexOf("]", emotionIndex);
-    if (endBracket >= 0) {
-      String cleanResponse = response.substring(0, emotionIndex) + 
-                           response.substring(endBracket + 1);
-      cleanResponse.trim();
-      return cleanResponse;
-    }
-  }
-  return response;
-}
-
-// Apply haptic feedback based on emotion level
-void applyHapticFeedback(int emotionLevel) {
-  int intensity = map(emotionLevel, 0, 100, 160, 255); // Minimum 50 for noticeable vibration
-  
-  // Map emotion to vibration pattern
-  if (emotionLevel <= 20) {
-    for (int i = 0; i < 4; i++) {
-      analogWrite(HAPTIC_PIN, intensity);
-      delay(400);
-      analogWrite(HAPTIC_PIN, 0);
-      delay(1500);
-    }
-  }
-  else if (emotionLevel <= 40) {
-    analogWrite(HAPTIC_PIN, intensity);
-    delay(600);
-    analogWrite(HAPTIC_PIN, 0);
-    delay(1000);
-    analogWrite(HAPTIC_PIN, intensity);
-    delay(600);
-    analogWrite(HAPTIC_PIN, 0);
-    delay(1000);
-  }
-  else if (emotionLevel <= 60) {
-    analogWrite(HAPTIC_PIN, intensity);
-    delay(400);
-    analogWrite(HAPTIC_PIN, 0);
-    delay(200);
-    analogWrite(HAPTIC_PIN, intensity);
-    delay(400);
-    analogWrite(HAPTIC_PIN, 0);
-    delay(200);
-  }
-  else if (emotionLevel <= 80) {
-    for (int i = 0; i < 10; i++) {
-      analogWrite(HAPTIC_PIN, intensity);
-      delay(150);
-      analogWrite(HAPTIC_PIN, 0);
-      delay(100);
-    }
-  }
-  else {
-    for (int i = 0; i < 8; i++) {
-      analogWrite(HAPTIC_PIN, intensity);
-      delay(100);
-      analogWrite(HAPTIC_PIN, 0);
-      delay(60);
-    }
-  }
-  
-  // Ensure motor is off after pattern
-  analogWrite(HAPTIC_PIN, 0);
 }
 
 void openAI_chat_reset() {

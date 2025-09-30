@@ -41,6 +41,11 @@ void loop()
   }  
 }
 
+
+// *************************************************************
+// Don't worry about the code below this line
+// *************************************************************
+
 void initWiFi() {
   Serial.print("Connecting to ");
   Serial.println(wifi_ssid);

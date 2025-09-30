@@ -38,6 +38,10 @@ void loop()
   }  
 }
 
+// *************************************************************
+// Don't worry about the code below this line
+// *************************************************************
+
 // set up WiFi
 void initWiFi() {
   Serial.print("Connecting to ");

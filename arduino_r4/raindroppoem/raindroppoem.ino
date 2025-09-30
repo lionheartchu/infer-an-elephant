@@ -33,9 +33,11 @@ void setup() {
   }
   delay(100);
   
-  pinMode(A0, INPUT);
-  
+  // initialize WiFi
   initWiFi();
+
+  // initialize rain sensor pin
+  pinMode(A0, INPUT);  
   
   // Take initial reading
   previousReading = getAverageReading();
@@ -76,38 +78,6 @@ void loop() {
   
   previousReading = currentReading;
   delay(100); // Small delay before next cycle
-}
-
-void initWiFi() {
-  Serial.print("Connecting to ");
-  Serial.println(wifi_ssid);
-  delay(200);
-
-  if (strlen(wifi_password) > 0) {
-    WiFi.begin(wifi_ssid, wifi_password);
-  } else {
-    WiFi.begin(wifi_ssid);
-  }
-
-  int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
-    delay(500);
-    Serial.print(".");
-    attempts++;
-  }
-  Serial.println();
-
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("WiFi connected");
-    printWifiStatus();
-    delay(200);
-  } else {
-    Serial.println("Failed to connect to WiFi");
-  }
-}
-
-void printWifiStatus() {
-  // WiFi status printing - kept minimal for sensor application
 }
 
 int getAverageReading() {
@@ -171,6 +141,37 @@ String createPrompt(int difference) {
   };
   
   return prompts[random(0, 6)];
+}
+
+// *************************************************************
+// Don't worry about the code below this line
+// *************************************************************
+
+void initWiFi() {
+  Serial.print("Connecting to ");
+  Serial.println(wifi_ssid);
+  delay(200);
+
+  if (strlen(wifi_password) > 0) {
+    WiFi.begin(wifi_ssid, wifi_password);
+  } else {
+    WiFi.begin(wifi_ssid);
+  }
+
+  int attempts = 0;
+  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+    delay(500);
+    Serial.print(".");
+    attempts++;
+  }
+  Serial.println();
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("WiFi connected");
+    delay(200);
+  } else {
+    Serial.println("Failed to connect to WiFi");
+  }
 }
 
 String openAI_chat(String message) { 

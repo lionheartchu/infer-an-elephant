@@ -80,14 +80,11 @@ void initWiFi() {
   }
 }
 
+
 String openAI_chat(String message) { 
   const char* server = "api.ai.it.cornell.edu";
   const int httpsPort = 443;
 
-  // client.setInsecure(); // For simplicity, skip certificate validation
-
-  Serial.println("\nStarting SSL connection test...");
-  Serial.print("Attempting OpenAI connection... ");
   if (client.connect(server, httpsPort)) {
     Serial.println("connected to api.ai.it.cornell.edu");
 
@@ -97,7 +94,8 @@ String openAI_chat(String message) {
     message.replace("\n", "\\n");
     
     String user_content = "{\"role\": \"user\", \"content\":\"" + message + "\"}";
-    historical_messages += ", " + user_content;    
+    historical_messages += ", " + user_content;
+    
     String request = "{\"model\":\"" + model + "\",\"messages\":[" + historical_messages + "]}";
 
     // HTTP request
@@ -114,10 +112,9 @@ String openAI_chat(String message) {
     unsigned long timeout = millis();
     while (client.connected() && millis() - timeout < 10000) {
       if (client.available()) {
-        // Data is available to read
         break;
       }
-      delay(10); // Small delay to prevent overwhelming the CPU
+      delay(10);
     }
 
     // Read the response
@@ -129,7 +126,6 @@ String openAI_chat(String message) {
       if (client.available()) {
         String line = client.readStringUntil('\n');
         if (line == "\r") {
-          // Headers are complete
           break;
         }
         timeout = millis();
@@ -143,7 +139,6 @@ String openAI_chat(String message) {
         response += client.readStringUntil('\n');
         timeout = millis();
       } else if (!client.available() && millis() - timeout > 1000) {
-        // If no data for 1 second, assume we're done
         break;
       }
     }
@@ -159,10 +154,10 @@ String openAI_chat(String message) {
         if (endQuote > 0) {
           String content = response.substring(startQuote + 1, endQuote);
           
-          // Unescape the special characters - IMPORTANT FIX
-          content.replace("\\n", "\n");  // Convert "\n" to actual newlines
-          content.replace("\\\"", "\""); // Convert escaped quotes to actual quotes
-          content.replace("\\\\", "\\"); // Convert double backslashes to single
+          // Unescape the special characters
+          content.replace("\\n", "\n");
+          content.replace("\\\"", "\"");
+          content.replace("\\\\", "\\");
           
           // Add to history - keep the escaped version for JSON
           String escapedContent = content;

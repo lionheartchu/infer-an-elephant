@@ -1,5 +1,4 @@
 #include <WiFiS3.h>
-#include <WiFiClientSecure.h>
 
 // WiFi credentials
 const char* wifi_ssid = "RedRover";
@@ -14,7 +13,7 @@ String model = "openai.gpt-4o-mini";
 String system_content = "{\"role\": \"system\", \"content\":\""+ role +"\"}";
 String historical_messages = system_content;
 
-WiFiClientSecure client;
+WiFiSSLClient client;
 
 void setup() 
 {
@@ -85,7 +84,7 @@ String openAI_chat(String message) {
   const char* server = "api.openai.com";
   const int httpsPort = 443;
 
-  client.setInsecure(); // For simplicity, skip certificate validation
+  // client.setInsecure(); // For simplicity, skip certificate validation
 
   Serial.println("\nStarting SSL connection test...");
   Serial.print("Attempting OpenAI connection... ");

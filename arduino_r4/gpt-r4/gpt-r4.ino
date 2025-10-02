@@ -100,7 +100,7 @@ String openAI_chat(String message) {
 
     // HTTP request
     client.println("POST /v1/chat/completions HTTP/1.1");
-    client.println("Host: api.openai.com");
+    client.println("Host: api.ai.it.cornell.edu");
     client.println("Authorization: Bearer " + openaiKey);
     client.println("Content-Type: application/json; charset=utf-8");
     client.println("Content-Length: " + String(request.length()));

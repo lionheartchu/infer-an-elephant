@@ -81,7 +81,7 @@ void initWiFi() {
 }
 
 String openAI_chat(String message) { 
-  const char* server = "api.openai.com";
+  const char* server = "api.ai.it.cornell.edu";
   const int httpsPort = 443;
 
   // client.setInsecure(); // For simplicity, skip certificate validation
@@ -89,7 +89,7 @@ String openAI_chat(String message) {
   Serial.println("\nStarting SSL connection test...");
   Serial.print("Attempting OpenAI connection... ");
   if (client.connect(server, httpsPort)) {
-    Serial.println("connected to api.openai.com");
+    Serial.println("connected to api.ai.it.cornell.edu");
 
     // Properly escape JSON special characters
     message.replace("\\", "\\\\");

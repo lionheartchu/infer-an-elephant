@@ -5,7 +5,7 @@ const char* wifi_ssid = "RedRover";
 const char* wifi_pass = "";
 
 // OpenAI API Key
-String openaiKey = "";  // Set your OpenAI API Key here
+String openaiKey = "sk-qHOZpxbXor4oBXKEfpJQAA";  // Set your OpenAI API Key here
 
 // ChatGPT
 String role = "You are a helpful assistant.";

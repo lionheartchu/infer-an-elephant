@@ -27,11 +27,14 @@ const nextConfig = {
         unoptimized: true,
     },
 
-    env: {
-        OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-        ELEVENLABS_API_KEY: process.env.ELEVENLABS_API_KEY,
-        LLM_HOST: process.env.LLM_HOST,
-    },
+    // ❌ SECURITY: Removed env vars that expose API keys to client-side
+    // API keys should ONLY be used in server-side API routes
+    // Client components accessing these will need to call API routes instead
+    // env: {
+    //     OPENAI_API_KEY: process.env.OPENAI_API_KEY,  // ❌ Never expose to client!
+    //     ELEVENLABS_API_KEY: process.env.ELEVENLABS_API_KEY,
+    //     LLM_HOST: process.env.LLM_HOST,
+    // },
     reactStrictMode: false,
 }
 

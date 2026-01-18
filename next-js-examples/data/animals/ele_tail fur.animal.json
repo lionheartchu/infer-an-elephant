@@ -1,0 +1,45 @@
+{
+  "log_id": 2010270847084160686,
+  "result": [
+    {
+      "name": "Rhea",
+      "score": "0.577778"
+    },
+    {
+      "name": "Bustard",
+      "score": "0.101027"
+    },
+    {
+      "name": "Ostrich",
+      "score": "0.0424869"
+    },
+    {
+      "name": "Emu",
+      "score": "0.036212"
+    },
+    {
+      "name": "Anhinga",
+      "score": "0.0293588"
+    },
+    {
+      "name": "Porcupine",
+      "score": "0.0160574"
+    },
+    {
+      "name": "Cassowary",
+      "score": "0.0106167"
+    },
+    {
+      "name": "Kiwi",
+      "score": "0.00749384"
+    },
+    {
+      "name": "Cormorant",
+      "score": "0.00464461"
+    },
+    {
+      "name": "Limpkin",
+      "score": "0.00432945"
+    }
+  ]
+}

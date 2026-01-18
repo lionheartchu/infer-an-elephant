@@ -1,0 +1,45 @@
+{
+  "log_id": 2010270439852784350,
+  "result": [
+    {
+      "name": "African Elephant",
+      "score": "0.892112"
+    },
+    {
+      "name": "Asian Elephant",
+      "score": "0.0232328"
+    },
+    {
+      "name": "Indian Elephant",
+      "score": "0.00298856"
+    },
+    {
+      "name": "Walrus",
+      "score": "0.00201908"
+    },
+    {
+      "name": "Galapagos Giant Tortoise",
+      "score": "0.00102912"
+    },
+    {
+      "name": "Chinese Rhinocero",
+      "score": "0.000720696"
+    },
+    {
+      "name": "Mirounga",
+      "score": "0.000568371"
+    },
+    {
+      "name": "Geochelone",
+      "score": "0.00056484"
+    },
+    {
+      "name": "Zebra",
+      "score": "0.000532969"
+    },
+    {
+      "name": "Trilobita",
+      "score": "0.000493117"
+    }
+  ]
+}

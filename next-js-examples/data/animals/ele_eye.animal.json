@@ -1,0 +1,45 @@
+{
+  "log_id": 2010270608260886093,
+  "result": [
+    {
+      "name": "Mirounga",
+      "score": "0.181131"
+    },
+    {
+      "name": "Cutlassfish",
+      "score": "0.141205"
+    },
+    {
+      "name": "Pug",
+      "score": "0.0255949"
+    },
+    {
+      "name": "Swedish Elkhound",
+      "score": "0.0214937"
+    },
+    {
+      "name": "Giant Oarfish ",
+      "score": "0.0153018"
+    },
+    {
+      "name": "Asian Elephant",
+      "score": "0.013393"
+    },
+    {
+      "name": "Chinese Drum",
+      "score": "0.0124172"
+    },
+    {
+      "name": "Taihu Pig",
+      "score": "0.0117188"
+    },
+    {
+      "name": "Eel",
+      "score": "0.00922978"
+    },
+    {
+      "name": "Wolf Eel",
+      "score": "0.00911459"
+    }
+  ]
+}

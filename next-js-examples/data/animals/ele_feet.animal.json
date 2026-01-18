@@ -1,0 +1,45 @@
+{
+  "log_id": 2010270662805252781,
+  "result": [
+    {
+      "name": "Manatee",
+      "score": "0.409526"
+    },
+    {
+      "name": "Walrus",
+      "score": "0.108436"
+    },
+    {
+      "name": "Mirounga",
+      "score": "0.0841788"
+    },
+    {
+      "name": "Chinese Rhinocero",
+      "score": "0.0461412"
+    },
+    {
+      "name": "African Elephant",
+      "score": "0.0383535"
+    },
+    {
+      "name": "Tardigrade",
+      "score": "0.0179366"
+    },
+    {
+      "name": "Babirusa",
+      "score": "0.0174423"
+    },
+    {
+      "name": "Hippopotamus",
+      "score": "0.013525"
+    },
+    {
+      "name": "Indian Rhinocero",
+      "score": "0.0126459"
+    },
+    {
+      "name": "Rhinocero",
+      "score": "0.0121687"
+    }
+  ]
+}

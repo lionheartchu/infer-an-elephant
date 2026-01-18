@@ -1,0 +1,45 @@
+{
+  "log_id": 2010270918239758936,
+  "result": [
+    {
+      "name": "African Elephant",
+      "score": "0.59872"
+    },
+    {
+      "name": "Asian Elephant",
+      "score": "0.144338"
+    },
+    {
+      "name": "Pelican",
+      "score": "0.0360579"
+    },
+    {
+      "name": "Australian Pelican",
+      "score": "0.00899816"
+    },
+    {
+      "name": "Flamingo",
+      "score": "0.00646491"
+    },
+    {
+      "name": "Mammoth",
+      "score": "0.00526385"
+    },
+    {
+      "name": "Ostrich",
+      "score": "0.00441569"
+    },
+    {
+      "name": "Spoonbill",
+      "score": "0.00288048"
+    },
+    {
+      "name": "Indian Elephant",
+      "score": "0.00275204"
+    },
+    {
+      "name": "Swan",
+      "score": "0.00267335"
+    }
+  ]
+}
